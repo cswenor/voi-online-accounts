@@ -5,6 +5,7 @@
     };
     let totalAccounts = 0;
     let accounts = [];
+    let hasErrorOccurred = false; // Track if any errors occurred
 
     function fetchAccounts(url) {
         fetch(url)
@@ -37,7 +38,9 @@
             })
             .catch(error => {
                 console.error('Error fetching accounts:', error);
-                document.getElementById('loading').innerText = 'Error loading data.';
+                hasErrorOccurred = true;  // Mark that an error has occurred
+                displayAccounts();  // Display whatever data we've gathered so far
+                document.getElementById('loading').innerText = 'Error loading some data, displaying available data.';
             });
     }
 
@@ -72,7 +75,9 @@
         if (accounts.length > 0) {
             document.getElementById('accounts-table').style.display = 'table';
         } else {
-            document.getElementById('loading').innerText = 'No online participation accounts found.';
+            document.getElementById('loading').innerText = hasErrorOccurred
+                ? 'No data could be fetched due to errors.'
+                : 'No online participation accounts found.';
         }
     }
 
