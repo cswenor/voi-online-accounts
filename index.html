@@ -3,38 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Voi Online Participation Accounts</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-        #total-count {
-            font-size: 1.5em;
-            margin-bottom: 10px;
-        }
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            max-width: 100%;
-            margin-bottom: 20px;
-        }
-        th, td {
-            border: 1px solid #bbb;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #eee;
-        }
-        #loading {
-            font-size: 1.2em;
-            color: #555;
-        }
-        .container {
-            width: 90%;
-            margin: auto;
-            max-width: 1200px;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
@@ -56,94 +25,6 @@
     </table>
 </div>
 
-<script>
-    (function() {
-        const indexerEndpoint = 'https://mainnet-idx.voi.nodely.dev/v2/accounts';
-        const params = {
-            'has-participation-key': 'true',
-            'limit': 1000
-        };
-        let totalAccounts = 0;
-        let accounts = [];
-
-        function fetchAccounts(url) {
-            fetch(url)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! Status: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    // Filter accounts with status 'Online' client-side
-                    const onlineAccounts = data.accounts.filter(account => account.status === 'Online');
-                    accounts = accounts.concat(onlineAccounts);
-                    totalAccounts += onlineAccounts.length;
-                    document.getElementById('count').innerText = totalAccounts;
-
-                    if (data['next-token']) {
-                        // Fetch the next page
-                        const nextUrl = `${indexerEndpoint}?${new URLSearchParams({
-                            ...params,
-                            'next': data['next-token']
-                        })}`;
-                        fetchAccounts(nextUrl);
-                    } else {
-                        // All data fetched, display the table
-                        displayAccounts();
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching accounts:', error);
-                    document.getElementById('loading').innerText = 'Error loading data.';
-                });
-        }
-
-        function displayAccounts() {
-            const tableBody = document.getElementById('accounts-body');
-            accounts.forEach(account => {
-                const tr = document.createElement('tr');
-
-                // Address
-                const tdAddress = document.createElement('td');
-                tdAddress.innerText = account.address;
-                tr.appendChild(tdAddress);
-
-                // Amount
-                const tdAmount = document.createElement('td');
-                tdAmount.innerText = formatVoiAmount(account.amount) + ' VOI';
-                tr.appendChild(tdAmount);
-
-                // Key Expiration Block
-                const tdExpiration = document.createElement('td');
-                if (account.participation && account.participation['vote-last-valid']) {
-                    tdExpiration.innerText = account.participation['vote-last-valid'];
-                } else {
-                    tdExpiration.innerText = 'N/A';
-                }
-                tr.appendChild(tdExpiration);
-
-                tableBody.appendChild(tr);
-            });
-
-            document.getElementById('loading').style.display = 'none';
-            if (accounts.length > 0) {
-                document.getElementById('accounts-table').style.display = 'table';
-            } else {
-                document.getElementById('loading').innerText = 'No online participation accounts found.';
-            }
-        }
-
-        // Helper function to format amount in Voi (from Sweenie Weenies)
-        function formatVoiAmount(sweenieWeenies) {
-            return (sweenieWeenies / 1e6).toLocaleString(undefined, { minimumFractionDigits: 6, maximumFractionDigits: 6 });
-        }
-
-        // Start fetching data
-        const initialUrl = `${indexerEndpoint}?${new URLSearchParams(params)}`;
-        fetchAccounts(initialUrl);
-    })();
-</script>
-
+<script src="scripts.js"></script>
 </body>
 </html>
