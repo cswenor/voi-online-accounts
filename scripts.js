@@ -1,7 +1,8 @@
 (function() {
     const indexerEndpoint = 'https://mainnet-idx.voi.nodely.dev/v2/accounts';
     const params = {
-        'limit': 1000
+        'limit': 1000,
+        'exclude': 'all'
     };
     let totalAccounts = 0;
     let accounts = [];
