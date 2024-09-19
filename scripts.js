@@ -31,9 +31,10 @@
                     })}`;
                     setTimeout(() => {
                         fetchAccounts(nextUrl);
-                    }, 100);  // 100ms delay to limit to 10 TPS
+                    }, 10);  // 100ms delay to limit to 10 TPS
                 } else {
-                    // No more pages, display the table
+                    // All data fetched, sort by amount, and display the table
+                    sortAccountsByAmount();  // Sort the accounts array before displaying
                     displayAccounts();
                 }
             })
@@ -43,6 +44,11 @@
                 displayAccounts();  // Display whatever data we've gathered so far
                 document.getElementById('loading').innerText = 'Error loading some data, displaying available data.';
             });
+    }
+
+    // Sort accounts by amount in descending order
+    function sortAccountsByAmount() {
+        accounts.sort((a, b) => b.amount - a.amount);
     }
 
     function displayAccounts() {
